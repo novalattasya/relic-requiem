@@ -1,0 +1,17 @@
+name: RelicRequiem
+version: '1.0.0'
+main: com.relicrequiem.plugin.RelicRequiemPlugin
+api-version: '1.21'
+authors: [Nopal]
+description: Relic Requiem RPG Event Plugin
+
+commands:
+  getrelic:
+    description: Ambil item Relic untuk testing
+    usage: /getrelic
+  getmaterials:
+    description: Ambil bahan untuk testing
+    usage: /getmaterials
+  spawnmeteor:
+    description: Paksa spawn meteor Worldheart Ore
+    usage: /spawnmeteor
