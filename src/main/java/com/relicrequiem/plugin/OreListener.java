@@ -1,5 +1,7 @@
 package com.relicrequiem.plugin;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,10 +17,19 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class OreListener implements Listener {
+
+    private final Map<UUID, BukkitRunnable> activeExtractions = new HashMap<>();
+    
+    // 82.5 Detik total (Berjalan tiap 5 tick = 330 Step)
+    private final int MAX_STEPS = 330; 
 
     private boolean isWorldheartOreBlock(Block block) {
         if (block.getType() == Material.NOTE_BLOCK) {
@@ -28,90 +39,142 @@ public class OreListener implements Listener {
         return false;
     }
 
-    // =========================================
-    // 1. SISTEM HARDNESS
-    // =========================================
-    
-    // Saat player mulai memukul blok
+    // 1. SISTEM EKSTRAKSI
     @EventHandler
-    public void onBlockDamage(BlockDamageEvent event) {
-        if (isWorldheartOreBlock(event.getBlock())) {
+    public void onOrePunch(PlayerInteractEvent event) {
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Block block = event.getClickedBlock();
             Player player = event.getPlayer();
-            // Kasih efek Mining Fatigue Amplifier 2 (Level 3)
-            // Ini bikin durasi nambang setara Reinforced Deepslate (sekitar 82.5 detik)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 20 * 120, 2, false, false, false));
+
+            if (block != null && isWorldheartOreBlock(block)) {
+                event.setCancelled(true); // Stop event Vanilla
+
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    
+                    if (activeExtractions.containsKey(player.getUniqueId())) {
+                        return;
+                    }
+
+                    ItemStack tool = player.getInventory().getItemInMainHand();
+                    if (tool.getType() != Material.DIAMOND_PICKAXE && tool.getType() != Material.NETHERITE_PICKAXE) {
+                        player.sendMessage("§c[!] Beliungmu terlalu lemah untuk memulai ekstraksi! Butuh Diamond Pickaxe.");
+                        return;
+                    }
+
+                    startExtraction(player, block);
+                }
+            }
         }
     }
 
-    // Saat player berhenti memukul atau ganti item (batal nambang)
-    @EventHandler
-    public void onBlockDamageAbort(BlockDamageAbortEvent event) {
-        Player player = event.getPlayer();
-        if (player.hasPotionEffect(PotionEffectType.MINING_FATIGUE)) {
-            player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
-        }
+    private void startExtraction(Player player, Block block) {
+        Location loc = block.getLocation();
+        player.sendMessage("§d[!] Memulai Ekstraksi Worldheart Ore... Tetaplah dalam radius 6 blok!");
+
+        BukkitRunnable task = new BukkitRunnable() {
+            int step = 0;
+
+            @Override
+            public void run() {
+                // 1. Validasi keberadaan player
+                if (!player.isOnline() || player.isDead() || player.getLocation().distance(loc) > 6) {
+                    player.sendMessage("§c[!] Ekstraksi Gagal! Kamu terlalu jauh dari Ore.");
+                    cleanup(player, loc);
+                    return;
+                }
+
+                // 2. Validasi Blok
+                if (!isWorldheartOreBlock(block)) {
+                    cleanup(player, loc);
+                    return;
+                }
+
+                step++;
+                int percentage = (int) (((double) step / MAX_STEPS) * 100);
+
+                // 3. UI Progress Bar
+                String progressBar = generateProgressBar(percentage);
+                player.sendActionBar(Component.text("§5§lEXTRACTION: " + progressBar + " §d" + percentage + "%"));
+
+                // 4. RETAKAN
+                float progress = (float) step / MAX_STEPS;
+                block.getWorld().getPlayers().forEach(p -> p.sendBlockDamage(loc, progress, player.getEntityId()));
+
+                // 5. PARTIKEL
+                if (step % 4 == 0) {
+                    block.getWorld().spawnParticle(Particle.ENCHANT, loc.clone().add(0.5, 0.5, 0.5), 10, 0.4, 0.4, 0.4, 0.1);
+                    float pitch = 1.0f + (percentage / 100f);
+                    block.getWorld().playSound(loc, Sound.BLOCK_AMETHYST_BLOCK_RESONATE, 2.0f, pitch);
+                }
+
+                // 6. FINISH
+                if (step >= MAX_STEPS) {
+                    finishExtraction(player, block);
+                    cleanup(player, loc);
+                }
+            }
+
+            private void cleanup(Player p, Location l) {
+                this.cancel();
+                activeExtractions.remove(p.getUniqueId());
+                // Hapus retakan
+                l.getWorld().getPlayers().forEach(pl -> pl.sendBlockDamage(l, 0.0f, p.getEntityId()));
+            }
+        };
+
+        activeExtractions.put(player.getUniqueId(), task);
+        task.runTaskTimer(JavaPlugin.getPlugin(RelicRequiemPlugin.class), 0L, 5L);
     }
 
-    // Saat blok akhirnya hancur
+    private void finishExtraction(Player player, Block block) {
+        Location loc = block.getLocation().add(0.5, 0.5, 0.5);
+
+        // HANCURKAN
+        block.setType(Material.AIR);
+
+        // EFEK LEDAKAN AMAN
+        block.getWorld().spawnParticle(Particle.BLOCK, loc, 150, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.AMETHYST_BLOCK));
+        block.getWorld().spawnParticle(Particle.END_ROD, loc, 50, 0.4, 0.4, 0.4, 0.05); // Kilauan cahaya epik
+        block.getWorld().playSound(loc, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 2.0f, 0.8f);
+        block.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.5f);
+
+        // DROP ITEM
+        block.getWorld().dropItemNaturally(block.getLocation(), MaterialManager.createWorldheartGem());
+        player.sendMessage("§a[!] Ekstraksi Berhasil! Inti bumi telah terlepas.");
+    }
+
+    private String generateProgressBar(int percentage) {
+        int bars = percentage / 10;
+        StringBuilder builder = new StringBuilder("§d[");
+        for (int i = 0; i < 10; i++) {
+            if (i < bars) builder.append("§5|");
+            else builder.append("§7|");
+        }
+        builder.append("§d]");
+        return builder.toString();
+    }
+
+    // 2. SISTEM KEKEBALAN MUTLAK 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
-        Player player = event.getPlayer();
-
-        if (isWorldheartOreBlock(block)) {
-            // Hapus efek Fatigue-nya
-            if (player.hasPotionEffect(PotionEffectType.MINING_FATIGUE)) {
-                player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
-            }
-
-            // BATALKAN EVENT VANILLA! (Mencegah serpihan dan suara kayu Note Block muncul)
-            event.setCancelled(true); 
-
-            ItemStack tool = player.getInventory().getItemInMainHand();
-            Location loc = block.getLocation().add(0.5, 0.5, 0.5);
-
-            if (tool.getType() == Material.DIAMOND_PICKAXE || tool.getType() == Material.NETHERITE_PICKAXE) {
-                // Hancurkan blok secara manual
-                block.setType(Material.AIR);
-                
-                // EFEK VISUAL EPIK
-                // Nembakin serpihan tekstur Worldheart Ore beneran
-                block.getWorld().spawnParticle(Particle.ITEM, loc, 100, 0.3, 0.3, 0.3, 0.1, MaterialManager.createWorldheartOre());
-                // Nembakin debu-debu sihir ungu
-                block.getWorld().spawnParticle(Particle.DRAGON_BREATH, loc, 50, 0.4, 0.4, 0.4, 0.05);
-                
-                // EFEK SUARA EPIK (Batu kristal pecah + ledakan energi)
-                block.getWorld().playSound(loc, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1.5f, 0.8f);
-                block.getWorld().playSound(loc, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.5f);
-
-                // Drop Itemnya
-                block.getWorld().dropItemNaturally(block.getLocation(), MaterialManager.createWorldheartGem());
-            } else {
-                // Hancurkan blok tanpa drop (Penalti karena alat salah)
-                block.setType(Material.AIR);
-                block.getWorld().playSound(loc, Sound.BLOCK_STONE_BREAK, 1.0f, 0.8f);
-                player.sendMessage("§c[!] Beliungmu hancur berkeping-keping! Bijih ini butuh Diamond Pickaxe...");
+        if (isWorldheartOreBlock(event.getBlock())) {
+            event.setCancelled(true);
+            if (event.getPlayer().getGameMode() == org.bukkit.GameMode.CREATIVE) {
+                finishExtraction(event.getPlayer(), event.getBlock()); 
             }
         }
     }
 
-    // =========================================
-    // 2. SISTEM KEKEBALAN MUTLAK
-    // =========================================
-    
-    // Kebal Ledakan Creeper / TNT
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.blockList().removeIf(this::isWorldheartOreBlock);
     }
 
-    // Kebal Ledakan Bed / Respawn Anchor
     @EventHandler
     public void onBlockExplode(BlockExplodeEvent event) {
         event.blockList().removeIf(this::isWorldheartOreBlock);
     }
 
-    // Kebal Dorongan Piston
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
@@ -122,7 +185,6 @@ public class OreListener implements Listener {
         }
     }
 
-    // Kebal Tarikan Piston (Sticky Piston)
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
@@ -133,22 +195,6 @@ public class OreListener implements Listener {
         }
     }
 
-    // =========================================
-    // 3. SISTEM STABILITAS
-    // =========================================
-    
-    // Cegah klik kanan agar nada/instrumen tidak berubah
-    @EventHandler
-    public void onNoteClick(PlayerInteractEvent event) {
-        if (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
-            Block block = event.getClickedBlock();
-            if (block != null && isWorldheartOreBlock(block)) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    // Kunci fisika blok agar kebal dari update blok di sekitarnya
     @EventHandler
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Block block = event.getBlock();
