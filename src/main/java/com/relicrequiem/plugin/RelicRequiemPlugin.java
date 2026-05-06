@@ -3,7 +3,6 @@ package com.relicrequiem.plugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +43,14 @@ public class RelicRequiemPlugin extends JavaPlugin {
 
             else if (command.getName().equalsIgnoreCase("spawnmeteor")) {
                 MeteorManager.spawnMeteorNearPlayer(player);
+                return true;
+            }
+            
+            // COMMAND BARU: BUAT RESET DATABASE BIAR BISA CRAFTING LAGI!
+            else if (command.getName().equalsIgnoreCase("resetrelic")) {
+                getConfig().set("relic_awoken", false);
+                saveConfig();
+                player.sendMessage("§a[!] Status Relic di Server telah di-reset! Kamu bisa crafting lagi sekarang.");
                 return true;
             }
             

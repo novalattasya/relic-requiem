@@ -15,3 +15,6 @@ commands:
   spawnmeteor:
     description: Paksa spawn meteor Worldheart Ore
     usage: /spawnmeteor
+  resetrelic:
+    description: Reset item Relic yang sudah dicraft
+    usage: /resetrelic
