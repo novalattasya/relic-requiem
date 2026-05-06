@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;

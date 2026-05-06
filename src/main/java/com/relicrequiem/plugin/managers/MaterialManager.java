@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.managers;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -27,9 +27,8 @@ public class MaterialManager {
     public static final NamespacedKey DOMINION_CORE_KEY = new NamespacedKey(plugin, "dominion_core");
     public static final NamespacedKey WORLDHEART_ORE_KEY = new NamespacedKey(plugin, "worldheart_ore");
 
-    // 1. FALLEN SOUL
     public static ItemStack createFallenSoul() {
-        ItemStack item = new ItemStack(Material.PHANTOM_MEMBRANE); // Aman dari achievement
+        ItemStack item = new ItemStack(Material.PHANTOM_MEMBRANE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text("Fallen Soul").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
@@ -49,9 +48,8 @@ public class MaterialManager {
         return item.getItemMeta().getPersistentDataContainer().has(FALLEN_SOUL_KEY, PersistentDataType.BYTE);
     }
 
-    // 2. WORLDHEART GEM
     public static ItemStack createWorldheartGem() {
-        ItemStack item = new ItemStack(Material.AMETHYST_SHARD); // Aman dari achievement
+        ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text("Worldheart Gem").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
@@ -71,9 +69,8 @@ public class MaterialManager {
         return item.getItemMeta().getPersistentDataContainer().has(WORLDHEART_GEM_KEY, PersistentDataType.BYTE);
     }
 
-    // 3. DOMINION CORE
     public static ItemStack createDominionCore() {
-        ItemStack item = new ItemStack(Material.ECHO_SHARD); // Aman dari achievement
+        ItemStack item = new ItemStack(Material.ECHO_SHARD);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text("Dominion Core").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
@@ -93,7 +90,6 @@ public class MaterialManager {
         return item.getItemMeta().getPersistentDataContainer().has(DOMINION_CORE_KEY, PersistentDataType.BYTE);
     }
 
-    // 4. WORLDHEART ORE (Block Item)
     public static ItemStack createWorldheartOre() {
         ItemStack item = new ItemStack(Material.NOTE_BLOCK); 
         ItemMeta meta = item.getItemMeta();

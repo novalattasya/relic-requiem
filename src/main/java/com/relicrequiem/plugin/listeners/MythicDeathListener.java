@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.listeners;
 
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.event.EventHandler;

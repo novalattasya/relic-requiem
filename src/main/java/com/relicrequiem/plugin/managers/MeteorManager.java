@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
@@ -17,14 +17,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MeteorManager {
 
-    // 1. SPAWN NATURAL (Setiap 3 Jam, Acak di Radius 4000x4000)
     public static void spawnRandomMeteor() {
         World world = Bukkit.getWorlds().get(0);
         int x = 0, z = 0;
         Block targetGround = null;
         boolean validLocation = false;
 
-        // Looping: Terus acak kordinat sampai nemu TANAH ALAMI (bukan air, bukan rumah)
         while (!validLocation) {
             x = ThreadLocalRandom.current().nextInt(-2000, 2001);
             z = ThreadLocalRandom.current().nextInt(-2000, 2001);
@@ -39,11 +37,9 @@ public class MeteorManager {
             }
         }
 
-        // Eksekusi kawah dan meteor
         executeMeteorSpawn(world, x, targetGround.getY() - 1, z, true);
     }
 
-    // 2. SPAWN DEBUG ADMIN
     public static void spawnMeteorNearPlayer(Player admin) {
         Location adminLoc = admin.getLocation();
         World world = admin.getWorld();
@@ -73,10 +69,8 @@ public class MeteorManager {
                type == Material.GRAVEL || type.name().endsWith("_TERRACOTTA");
     }
 
-    // 3. MESIN EKSEKUSI KAWAH & METEOR
     private static void executeMeteorSpawn(World world, int x, int y, int z, boolean isGlobalBroadcast) {
         
-        // 1. GENERATE KAWAH (Radius 3 Block)
         int radius = 3;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dy = -radius; dy <= radius; dy++) {
@@ -90,10 +84,8 @@ public class MeteorManager {
                         if (dx == 0 && dy == 0 && dz == 0) continue; // Jangan sentuh titik tengah (tempat Ore)
 
                         if (distanceSq < (radius - 1) * (radius - 1)) {
-                            // Inti kawah: Menguap jadi udara
                             b.setType(Material.AIR);
                         } else {
-                            // Pinggiran kawah: Tanah hangus (Magma & Batu)
                             if (b.getType().isSolid() && !b.getType().isAir()) {
                                 if (ThreadLocalRandom.current().nextBoolean()) {
                                     b.setType(Material.MAGMA_BLOCK);
@@ -107,18 +99,13 @@ public class MeteorManager {
             }
         }
 
-        // 2. SULAP NOTE BLOCK
         Block targetBlock = world.getBlockAt(x, y, z);
         org.bukkit.block.data.BlockData data = Bukkit.createBlockData(Material.NOTE_BLOCK);
         NoteBlock noteBlock = (NoteBlock) data;
         noteBlock.setInstrument(Instrument.CHIME);
         noteBlock.setNote(new Note(10));
-        targetBlock.setBlockData(noteBlock, false); // false = jangan update blok sekitarnya biar gak kedip
+        targetBlock.setBlockData(noteBlock, false);
 
-        // =========================================================================
-        // 2.5 TRIK SIHIR ARMOR STAND (VERSI ANGKA SAKTI HASIL EKSPERIMEN)
-        // =========================================================================
-        // Posisi Y diturunin -2.27 sesuai hitungan presisi Bedrock
         Location asLoc = targetBlock.getLocation().add(0.5, -2.27, 0.5); 
         ArmorStand armorStand = world.spawn(asLoc, ArmorStand.class);
         

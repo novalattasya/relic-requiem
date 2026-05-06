@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.listeners;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -30,7 +30,6 @@ public class OreListener implements Listener {
 
     private final Map<UUID, BukkitRunnable> activeExtractions = new HashMap<>();
     
-    // 82.5 Detik total (Berjalan tiap 5 tick = 330 Step)
     private final int MAX_STEPS = 330; 
 
     private boolean isWorldheartOreBlock(Block block) {
@@ -41,7 +40,6 @@ public class OreListener implements Listener {
         return false;
     }
 
-    // 1. SISTEM EKSTRAKSI
     @EventHandler
     public void onOrePunch(PlayerInteractEvent event) {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) {

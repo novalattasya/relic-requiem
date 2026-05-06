@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.listeners;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -25,24 +25,19 @@ public class AwakeningListener implements Listener {
     public void onAwaken(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        // 🛡️ ANTI-BUG GEYSER/BEDROCK: Cegah event kepanggil 2x gara-gara offhand!
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
 
-        // Cek apakah klik kanan sambil Shift
         if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && player.isSneaking()) {
             ItemStack handItem = event.getItem();
 
-            // Cek apakah yang dipegang Dominion Core
             if (MaterialManager.isDominionCore(handItem)) {
-                event.setCancelled(true); // Biar aman gak ke-place/interaksi aneh
+                event.setCancelled(true);
 
-                // Cek Database Server: Apakah Relic sudah pernah dibuat?
                 if (plugin.getConfig().getBoolean("relic_awoken", false)) {
                     player.sendMessage("§c[!] The Worldheart Relic telah dibangkitkan oleh seseorang. Kesempatan ini sudah hilang!");
                     return;
                 }
 
-                // Cek Inventory: Punya Fallen Soul & Worldheart Gem?
                 boolean hasSoul = false;
                 boolean hasGem = false;
 

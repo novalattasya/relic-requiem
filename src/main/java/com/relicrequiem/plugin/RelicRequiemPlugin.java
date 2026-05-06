@@ -1,5 +1,8 @@
 package com.relicrequiem.plugin;
 
+import com.relicrequiem.plugin.listeners.*;
+import com.relicrequiem.plugin.managers.*;
+import com.relicrequiem.plugin.tasks.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;

@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.managers;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,7 +18,6 @@ public class RelicManager {
 
     public static final NamespacedKey RELIC_KEY = new NamespacedKey(JavaPlugin.getPlugin(RelicRequiemPlugin.class), "is_relic");
 
-    // FUNGSI 1: MENCIPTAKAN RELIC
     public static ItemStack createRelic() {
         ItemStack relic = new ItemStack(Material.PAPER);
         ItemMeta meta = relic.getItemMeta();
@@ -44,7 +43,6 @@ public class RelicManager {
         return relic;
     }
 
-    // MENGECEK APAKAH ITEM ADALAH RELIC
     public static boolean isRelic(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         return item.getItemMeta().getPersistentDataContainer().has(RELIC_KEY, PersistentDataType.BYTE);

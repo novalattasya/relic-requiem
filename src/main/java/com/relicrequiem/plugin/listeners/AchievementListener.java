@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -14,7 +14,6 @@ public class AchievementListener implements Listener {
 
     private final RelicRequiemPlugin plugin = JavaPlugin.getPlugin(RelicRequiemPlugin.class);
 
-    // Kunci memori di badan player
     private final NamespacedKey HAS_SOUL = new NamespacedKey(plugin, "achv_has_soul");
     private final NamespacedKey HAS_GEM = new NamespacedKey(plugin, "achv_has_gem");
     private final NamespacedKey HAS_CORE = new NamespacedKey(plugin, "achv_has_core");

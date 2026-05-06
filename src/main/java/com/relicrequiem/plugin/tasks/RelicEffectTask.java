@@ -1,4 +1,4 @@
-package com.relicrequiem.plugin;
+package com.relicrequiem.plugin.tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,18 +32,15 @@ public class RelicEffectTask extends BukkitRunnable {
             if (hasRelic) {
                 currentHolders.add(player.getUniqueId());
 
-                // EFEK 1: WALLHACK & SURVIVAL BUFF
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 1, false, false, true));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 60, 0, false, false, true));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 60, 0, false, false, false));
 
-                // EFEK 2: MANHUNT LOCATOR BAR (TITIK MERAH VANILLA)
                 if (!markedPlayers.contains(player.getUniqueId())) {
                     markedPlayers.add(player.getUniqueId());
                     
-                    // KITA BUANG CUSTOM STYLE SIALAN ITU! Balik ke titik merah Vanilla yang 100% Work!
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + player.getName() + " color red");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + player.getName() + " style reset"); // Jaga-jaga bersihin cache error
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + player.getName() + " style reset");
                     
                     player.sendMessage("§4§l[!] AURA RELIC MELEDAK! Posisimu sekarang terekspos sebagai TITIK MERAH di Locator Bar!");
                 }
