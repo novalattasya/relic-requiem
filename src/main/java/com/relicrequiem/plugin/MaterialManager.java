@@ -3,12 +3,18 @@ package com.relicrequiem.plugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.NoteBlock;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Instrument;
+import org.bukkit.Note;
+
 
 import java.util.List;
 
@@ -89,7 +95,7 @@ public class MaterialManager {
 
     // 4. WORLDHEART ORE (Block Item)
     public static ItemStack createWorldheartOre() {
-        ItemStack item = new ItemStack(Material.NOTE_BLOCK); // Rangkanya Note Block
+        ItemStack item = new ItemStack(Material.NOTE_BLOCK); 
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(Component.text("Worldheart Ore").color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
@@ -97,8 +103,18 @@ public class MaterialManager {
                     Component.text("Batu kuno yang menyimpan inti dunia.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
                     Component.text("Hanya beliung terkuat yang bisa menambangnya!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false)
             ));
-            meta.setCustomModelData(5); // Nomor antrean Resource Pack: 5
+            meta.setCustomModelData(5); 
             meta.getPersistentDataContainer().set(WORLDHEART_ORE_KEY, PersistentDataType.BYTE, (byte) 1);
+
+            // INI SIHIRNYA: Suntikkan DNA Blok langsung ke dalam Item!
+            if (meta instanceof BlockDataMeta blockDataMeta) {
+                BlockData data = org.bukkit.Bukkit.createBlockData(Material.NOTE_BLOCK);
+                NoteBlock noteBlock = (NoteBlock) data;
+                noteBlock.setInstrument(Instrument.CHIME);
+                noteBlock.setNote(new Note(10));
+                blockDataMeta.setBlockData(noteBlock);
+            }
+
             item.setItemMeta(meta);
         }
         return item;

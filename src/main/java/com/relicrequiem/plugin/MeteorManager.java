@@ -37,11 +37,11 @@ public class MeteorManager {
             }
         }
 
-        // Eksekusi kawah dan meteor (Ore ditanam 1 blok ke dalam tanah)
+        // Eksekusi kawah dan meteor
         executeMeteorSpawn(world, x, targetGround.getY() - 1, z, true);
     }
 
-    // 2. SPAWN DEBUG ADMIN (Di depan admin, hancurin apa aja yang ada!)
+    // 2. SPAWN DEBUG ADMIN
     public static void spawnMeteorNearPlayer(Player admin) {
         Location adminLoc = admin.getLocation();
         World world = admin.getWorld();
@@ -92,7 +92,6 @@ public class MeteorManager {
                             b.setType(Material.AIR);
                         } else {
                             // Pinggiran kawah: Tanah hangus (Magma & Batu)
-                            // Hanya ubah blok yang padat (biar gak ada magma melayang di udara)
                             if (b.getType().isSolid() && !b.getType().isAir()) {
                                 if (ThreadLocalRandom.current().nextBoolean()) {
                                     b.setType(Material.MAGMA_BLOCK);
@@ -106,13 +105,13 @@ public class MeteorManager {
             }
         }
 
-        // 2. SULAP NOTE BLOCK (Tanam Ore di tengah kawah)
+        // 2. SULAP NOTE BLOCK
         Block targetBlock = world.getBlockAt(x, y, z);
-        targetBlock.setType(Material.NOTE_BLOCK);
-        NoteBlock noteBlock = (NoteBlock) targetBlock.getBlockData();
+        org.bukkit.block.data.BlockData data = Bukkit.createBlockData(Material.NOTE_BLOCK);
+        NoteBlock noteBlock = (NoteBlock) data;
         noteBlock.setInstrument(Instrument.CHIME);
         noteBlock.setNote(new Note(10));
-        targetBlock.setBlockData(noteBlock);
+        targetBlock.setBlockData(noteBlock, false); // false = jangan update blok sekitarnya biar gak kedip
 
         // 3. EFEK PETIR EPIK
         world.strikeLightningEffect(targetBlock.getLocation());
