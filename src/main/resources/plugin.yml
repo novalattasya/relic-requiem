@@ -9,12 +9,16 @@ commands:
   getrelic:
     description: Ambil item Relic untuk testing
     usage: /getrelic
+    permission: op
   getmaterials:
     description: Ambil bahan untuk testing
     usage: /getmaterials
+    permission: op
   spawnmeteor:
     description: Paksa spawn meteor Worldheart Ore
     usage: /spawnmeteor
+    permission: op
   resetrelic:
     description: Reset item Relic yang sudah dicraft
     usage: /resetrelic
+    permission: op

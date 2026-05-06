@@ -11,11 +11,17 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
+
+    maven {
+        name = "lumine-repo"
+        url = "https://mvn.lumine.io/repository/maven-public/"
+    }
 }
 
 dependencies {
     // Kita panggil Paper API versi 1.21.1 (Kompatibel untuk 1.21.11)
     compileOnly "io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT"
+    compileOnly "io.lumine:Mythic-Dist:5.6.2"
 }
 
 java {

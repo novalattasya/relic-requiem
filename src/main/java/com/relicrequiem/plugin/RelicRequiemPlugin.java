@@ -1,5 +1,8 @@
 package com.relicrequiem.plugin;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,54 +13,69 @@ public class RelicRequiemPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("Relic Requiem Plugin aktif!");
+        getLogger().info("Relic Requiem Plugin is enabled.");
         saveDefaultConfig();
+
+        initializeWorldBorders();
+
         getServer().getPluginManager().registerEvents(new RelicListener(), this);
         getServer().getPluginManager().registerEvents(new AchievementListener(), this);
         getServer().getPluginManager().registerEvents(new AwakeningListener(), this);
         getServer().getPluginManager().registerEvents(new OreListener(), this);
+        
+        if (getServer().getPluginManager().getPlugin("MythicMobs") != null) {
+            getServer().getPluginManager().registerEvents(new MythicDeathListener(), this);
+        }
+
         new RelicEffectTask().runTaskTimer(this, 0L, 20L);
 
-        long tigaJam = 20L * 60 * 60 * 3;
-        getServer().getScheduler().runTaskTimer(this, MeteorManager::spawnRandomMeteor, tigaJam, tigaJam);
+        long meteorInterval = 20L * 60 * 60 * 3;
+        getServer().getScheduler().runTaskTimer(this, MeteorManager::spawnRandomMeteor, meteorInterval, meteorInterval);
+    }
+
+    private void initializeWorldBorders() {
+        for (World world : Bukkit.getWorlds()) {
+            WorldBorder border = world.getWorldBorder();
+            border.setCenter(0.0, 0.0);
+            border.setSize(8000.0);
+        }
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player && player.isOp()) { // Onlyadmin
-            
-            if (command.getName().equalsIgnoreCase("getrelic")) {
+        if (!(sender instanceof Player player) || !player.isOp()) {
+            sender.sendMessage("§cInsufficient permissions.");
+            return true;
+        }
+
+        String cmdName = command.getName().toLowerCase();
+        
+        switch (cmdName) {
+            case "getrelic":
                 player.getInventory().addItem(RelicManager.createRelic());
-                player.sendMessage("§aRelic dimanifestasikan");
+                player.sendMessage("§aRelic item generated.");
                 return true;
-            } 
             
-            else if (command.getName().equalsIgnoreCase("getmaterials")) {
+            case "getmaterials":
                 player.getInventory().addItem(MaterialManager.createFallenSoul());
                 player.getInventory().addItem(MaterialManager.createWorldheartGem());
                 player.getInventory().addItem(MaterialManager.createDominionCore());
                 player.getInventory().addItem(MaterialManager.createWorldheartOre());
-                player.sendMessage("§aBahan-bahan Awakening dimanifestasikan");
+                player.sendMessage("§aAwakening materials generated.");
                 return true;
-            }
 
-            else if (command.getName().equalsIgnoreCase("spawnmeteor")) {
+            case "spawnmeteor":
                 MeteorManager.spawnMeteorNearPlayer(player);
                 return true;
-            }
             
-            // COMMAND BARU: BUAT RESET DATABASE BIAR BISA CRAFTING LAGI!
-            else if (command.getName().equalsIgnoreCase("resetrelic")) {
+            case "resetrelic":
                 getConfig().set("relic_awoken", false);
                 saveConfig();
-                player.sendMessage("§a[!] Status Relic di Server telah di-reset! Kamu bisa crafting lagi sekarang.");
+                player.sendMessage("§a[!] Server relic status has been reset.");
                 return true;
-            }
-            
-        } else {
-            sender.sendMessage("§cBukan admin njir!");
-            return true;
+
+            default:
+                return false;
         }
-        return false;
     }
 }
