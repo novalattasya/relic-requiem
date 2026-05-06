@@ -10,6 +10,8 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -117,7 +119,7 @@ public class OreListener implements Listener {
             private void cleanup(Player p, Location l) {
                 this.cancel();
                 activeExtractions.remove(p.getUniqueId());
-                // Hapus retakan
+                // Hapus retakan (HANYA MENGHAPUS EFEK RETAK, BLOK TETAP AMAN)
                 l.getWorld().getPlayers().forEach(pl -> pl.sendBlockDamage(l, 0.0f, p.getEntityId()));
             }
         };
@@ -129,8 +131,21 @@ public class OreListener implements Listener {
     private void finishExtraction(Player player, Block block) {
         Location loc = block.getLocation().add(0.5, 0.5, 0.5);
 
-        // HANCURKAN
+        // HANCURKAN NOTE BLOCK
         block.setType(Material.AIR);
+
+        // =========================================================================
+        // PEMBERSIHAN SIHIR ARMOR STAND (RADAR DIBESARKAN JADI 4.0!)
+        // =========================================================================
+        // Radius Y kita set 4.0 biar pasti nangkap ArmorStand yang terpendam di -2.27
+        for (Entity entity : block.getWorld().getNearbyEntities(loc, 1.5, 4.0, 1.5)) {
+            if (entity instanceof ArmorStand) {
+                if (((ArmorStand) entity).isMarker()) {
+                    entity.remove();
+                }
+            }
+        }
+        // =========================================================================
 
         // EFEK LEDAKAN AMAN
         block.getWorld().spawnParticle(Particle.BLOCK, loc, 150, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.AMETHYST_BLOCK));

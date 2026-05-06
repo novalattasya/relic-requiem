@@ -6,8 +6,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -112,6 +114,27 @@ public class MeteorManager {
         noteBlock.setInstrument(Instrument.CHIME);
         noteBlock.setNote(new Note(10));
         targetBlock.setBlockData(noteBlock, false); // false = jangan update blok sekitarnya biar gak kedip
+
+        // =========================================================================
+        // 2.5 TRIK SIHIR ARMOR STAND (VERSI ANGKA SAKTI HASIL EKSPERIMEN)
+        // =========================================================================
+        // Posisi Y diturunin -2.27 sesuai hitungan presisi Bedrock
+        Location asLoc = targetBlock.getLocation().add(0.5, -2.27, 0.5); 
+        ArmorStand armorStand = world.spawn(asLoc, ArmorStand.class);
+        
+        armorStand.setInvisible(true);
+        armorStand.setInvulnerable(true);
+        armorStand.setGravity(false);
+        armorStand.setMarker(true);
+        
+        // Skala 1.62 biar ukurannya pas 1 Blok
+        if (armorStand.getAttribute(Attribute.GENERIC_SCALE) != null) {
+            armorStand.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.62);
+        }
+        
+        // Pakaikan item Worldheart Ore custom lu sebagai Helm!
+        armorStand.getEquipment().setHelmet(MaterialManager.createWorldheartOre());
+        // =========================================================================
 
         // 3. EFEK PETIR EPIK
         world.strikeLightningEffect(targetBlock.getLocation());
