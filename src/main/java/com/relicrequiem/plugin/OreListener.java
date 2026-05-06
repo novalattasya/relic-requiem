@@ -1,8 +1,11 @@
 package com.relicrequiem.plugin;
 
 import org.bukkit.Instrument;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.Player;
@@ -25,15 +28,17 @@ public class OreListener implements Listener {
         return false;
     }
 
+    // =========================================
     // 1. SISTEM HARDNESS
+    // =========================================
+    
     // Saat player mulai memukul blok
     @EventHandler
     public void onBlockDamage(BlockDamageEvent event) {
         if (isWorldheartOreBlock(event.getBlock())) {
             Player player = event.getPlayer();
-            // Kasih efek Mining Fatigue Amplifier 1. 
-            // Ini bikin durasi nambang naik dari 1 detik jadi sekitar 14 detik (Sangat ideal buat RPG tanpa bikin player AFK bosan).
-            // Kalau mau yg bener-bener 80 detik (level bedrock), ganti angka 1 jadi 2.
+            // Kasih efek Mining Fatigue Amplifier 2 (Level 3)
+            // Ini bikin durasi nambang setara Reinforced Deepslate (sekitar 82.5 detik)
             player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, 20 * 120, 2, false, false, false));
         }
     }
@@ -59,18 +64,41 @@ public class OreListener implements Listener {
                 player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
             }
 
-            event.setDropItems(false);
+            // BATALKAN EVENT VANILLA! (Mencegah serpihan dan suara kayu Note Block muncul)
+            event.setCancelled(true); 
+
             ItemStack tool = player.getInventory().getItemInMainHand();
+            Location loc = block.getLocation().add(0.5, 0.5, 0.5);
 
             if (tool.getType() == Material.DIAMOND_PICKAXE || tool.getType() == Material.NETHERITE_PICKAXE) {
+                // Hancurkan blok secara manual
+                block.setType(Material.AIR);
+                
+                // EFEK VISUAL EPIK
+                // Nembakin serpihan tekstur Worldheart Ore beneran
+                block.getWorld().spawnParticle(Particle.ITEM, loc, 100, 0.3, 0.3, 0.3, 0.1, MaterialManager.createWorldheartOre());
+                // Nembakin debu-debu sihir ungu
+                block.getWorld().spawnParticle(Particle.DRAGON_BREATH, loc, 50, 0.4, 0.4, 0.4, 0.05);
+                
+                // EFEK SUARA EPIK (Batu kristal pecah + ledakan energi)
+                block.getWorld().playSound(loc, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1.5f, 0.8f);
+                block.getWorld().playSound(loc, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 1.5f);
+
+                // Drop Itemnya
                 block.getWorld().dropItemNaturally(block.getLocation(), MaterialManager.createWorldheartGem());
             } else {
+                // Hancurkan blok tanpa drop (Penalti karena alat salah)
+                block.setType(Material.AIR);
+                block.getWorld().playSound(loc, Sound.BLOCK_STONE_BREAK, 1.0f, 0.8f);
                 player.sendMessage("§c[!] Beliungmu hancur berkeping-keping! Bijih ini butuh Diamond Pickaxe...");
             }
         }
     }
 
+    // =========================================
     // 2. SISTEM KEKEBALAN MUTLAK
+    // =========================================
+    
     // Kebal Ledakan Creeper / TNT
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -105,7 +133,11 @@ public class OreListener implements Listener {
         }
     }
 
+    // =========================================
     // 3. SISTEM STABILITAS
+    // =========================================
+    
+    // Cegah klik kanan agar nada/instrumen tidak berubah
     @EventHandler
     public void onNoteClick(PlayerInteractEvent event) {
         if (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
@@ -116,6 +148,7 @@ public class OreListener implements Listener {
         }
     }
 
+    // Kunci fisika blok agar kebal dari update blok di sekitarnya
     @EventHandler
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Block block = event.getBlock();
