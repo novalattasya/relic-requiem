@@ -30,6 +30,7 @@ public class RelicRequiemPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AchievementListener(), this);
         getServer().getPluginManager().registerEvents(new AwakeningListener(), this);
         getServer().getPluginManager().registerEvents(new OreListener(), this);
+        getServer().getPluginManager().registerEvents(new DeathBanListener(), this);
         
         if (getServer().getPluginManager().getPlugin("MythicMobs") != null) {
             getServer().getPluginManager().registerEvents(new MythicDeathListener(), this);

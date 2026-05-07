@@ -187,10 +187,25 @@ messages:
     
     # When relic status is reset
     relic-reset: "§a[!] Server relic status has been reset."
+  
+  # Messages for death ban system
+  death-ban:
+    # When player is banned after being killed
+    kick: "§cYou have been temporarily banned for %hours% hours due to being killed by another player."
+    
+    # When banned player tries to join
+    join-kick: "§cYou are temporarily banned for being killed by another player.\n§cTime remaining: %hours% hours and %minutes% minutes."
 
 
 # ============================================
-# INTERNAL
+# DEATH BAN SYSTEM
 # ============================================
-# Tracks if the Relic has been awakened (managed by plugin)
-relic-awakened: false
+death-ban:
+  # Duration in hours for temporary ban after being killed by another player
+  # Set to 0 to disable death ban feature
+  duration-hours: 3
+
+# ============================================
+# BANNED PLAYERS (managed by plugin)
+# ============================================
+banned-players: {}

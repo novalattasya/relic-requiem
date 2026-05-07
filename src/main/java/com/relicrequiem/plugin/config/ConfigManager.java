@@ -265,6 +265,19 @@ public class ConfigManager {
     }
 
     // ============================================
+    // MESSAGES - DEATH BAN
+    // ============================================
+    public String getDeathBanKickMessage() {
+        return config.getString("messages.death-ban.kick", 
+            "§cYou have been temporarily banned for %hours% hours due to being killed by another player.");
+    }
+
+    public String getDeathBanJoinKickMessage() {
+        return config.getString("messages.death-ban.join-kick", 
+            "§cYou are temporarily banned for being killed by another player.\n§cTime remaining: %hours% hours and %minutes% minutes.");
+    }
+
+    // ============================================
     // CONFIG KEYS
     // ============================================
     public boolean isRelicAwakened() {
@@ -274,5 +287,43 @@ public class ConfigManager {
     public void setRelicAwakened(boolean awakened) {
         config.set("relic-awakened", awakened);
         plugin.saveConfig();
+    }
+
+    // ============================================
+    // DEATH BAN SYSTEM
+    // ============================================
+    public int getDeathBanDurationHours() {
+        return config.getInt("death-ban.duration-hours", 3);
+    }
+
+    // ============================================
+    // BANNED PLAYERS
+    // ============================================
+    public java.util.Map<String, Long> getBannedPlayers() {
+        org.bukkit.configuration.ConfigurationSection section = config.getConfigurationSection("banned-players");
+        if (section == null) return new java.util.HashMap<>();
+        return section.getValues(false).entrySet().stream()
+            .collect(java.util.stream.Collectors.toMap(
+                e -> e.getKey(),
+                e -> ((Number) e.getValue()).longValue()
+            ));
+    }
+
+    public void setBannedPlayer(String uuid, long banTimestamp) {
+        config.set("banned-players." + uuid, banTimestamp);
+        plugin.saveConfig();
+    }
+
+    public void removeBannedPlayer(String uuid) {
+        config.set("banned-players." + uuid, null);
+        plugin.saveConfig();
+    }
+
+    public boolean isPlayerBanned(String uuid) {
+        return config.contains("banned-players." + uuid);
+    }
+
+    public long getPlayerBanTimestamp(String uuid) {
+        return config.getLong("banned-players." + uuid, 0L);
     }
 }
