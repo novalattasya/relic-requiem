@@ -1,212 +1,250 @@
 # ============================================
-# Relic Requiem - Configuration File
-# Maintainers and Developers: novalattasya
+# CONFIG RELIC REQUIEM
+# Maintainer and Developer: novalattasya
 # ============================================
-# This configuration file controls all gameplay mechanics,
-# drop rates, timings, and messages in the Relic Requiem plugin.
-# The default values match the original plugin behavior.
+# Semua setting gameplay plugin ada di sini.
+# Ngatur meteor, relic, drop, message, dll.
+# Default config ini udah balance.
 
 # ============================================
 # WORLD SETTINGS
 # ============================================
 world:
-  # Size of the world border (radius from center)
-  # Default: 8000 (covers ±4000 from center point)
+  # Ukuran world border
+  # 8000 = area dari -4000 sampai 4000
   border-size: 8000
 
 
 # ============================================
-# METEOR SYSTEM
+# SISTEM METEOR
 # ============================================
 meteor:
-  # Interval in hours between automatic meteor spawns
+  # Interval meteor spawn otomatis (dalam jam)
   spawn-interval-hours: 3
-  
-  # Spawn radius in blocks (searches within this radius from 0,0)
+
+  # Radius area spawn meteor dari titik 0,0
   spawn-radius: 2000
-  
-  # Crater radius for destruction
+
+  # Radius crater meteor
   crater-radius: 3
-  
-  # Armor stand Y-offset for Bedrock compatibility
-  # This ensures proper alignment on block space
+
+  # Offset armor stand biar visual meteor gak ngaco di Bedrock
   armor-stand-y-offset: -2.27
-  
-  # Armor stand scale for visual representation
+
+  # Scale armor stand buat visual meteor
   armor-stand-scale: 1.62
 
 
 # ============================================
-# ORE EXTRACTION SYSTEM
+# SISTEM EKSTRAKSI ORE
 # ============================================
 ore-extraction:
-  # Duration in ticks to extract worldheart ore
-  # (330 ticks = 82.5 seconds, runs every 5 ticks = 66 steps)
+  # Lama ekstraksi worldheart ore
+  # 330 ticks = 82.5 detik
   duration-ticks: 330
-  
-  # Radius in blocks to search for armor stand marker when ore is destroyed
+
+  # Radius pencarian armor stand saat ore dihancurkan
   destruction-search-radius: 4.0
 
 
 # ============================================
-# MYTHIC MOBS - DROP CHANCES
+# DROP CHANCE MYTHIC MOBS
 # ============================================
-# Probability (0.0 - 1.0) for Dominion Core to drop from each mob
-# Mobs not listed have 0.0% chance
+# Peluang Dominion Core drop dari tiap mob
+# Value dari 0.0 - 1.0
+# Mob yang gak ada di list = 0% drop
+
 drop-chances:
-  # Tier 1: Bosses
+  # Tier 1: Boss utama
   skeletonking: 0.80
-  
-  # Tier 2: Mini-Bosses / High Health
+
+  # Tier 2: Mini boss / HP gede
   angrysludge: 0.40
   staticallychargedsheep: 0.20
-  
-  # Tier 3: Elites
+
+  # Tier 3: Elite mob
   skeletalknight: 0.15
-  
-  # Tier 4: Minions / Common
+
+  # Tier 4: Mob biasa / minion
   skeletalminion: 0.005
 
 
 # ============================================
-# CUSTOM ITEMS - NAMES & DESCRIPTIONS
+# CUSTOM ITEM
 # ============================================
 items:
   fallen-soul:
     name: "Fallen Soul"
     lore:
-      - "Every soul that falls is not lost,"
-      - "it becomes fuel for the next war."
-  
+      - "Setiap jiwa yang jatuh tidak pernah benar-benar hilang,"
+      - "mereka menjadi bahan bakar bagi perang berikutnya."
+
   worldheart-gem:
     name: "Worldheart Gem"
     lore:
-      - "The hardened heart of the world,"
-      - "shaped by thousands of wars."
-  
+      - "Jantung dunia yang telah mengeras,"
+      - "dibentuk oleh ribuan peperangan."
+
   dominion-core:
     name: "Dominion Core"
     lore:
-      - "Power to rule is not inherited,"
-      - "but seized from chaos."
-  
+      - "Kekuatan untuk menguasai tidak diwariskan,"
+      - "melainkan direbut dari kekacauan."
+
   worldheart-ore:
     name: "Worldheart Ore"
     lore:
-      - "A meteor bearing the power"
-      - "to reshape destiny."
-  
+      - "Meteor yang membawa kekuatan"
+      - "untuk mengubah takdir dunia."
+
   relic:
     name: "The Worldheart Relic"
     lore:
-      - "The artifact that determines"
-      - "the fate of the world."
-      - "Only one may reign supreme!"
+      - "Artefak yang menentukan"
+      - "nasib seluruh dunia."
+      - "Hanya satu yang layak menguasainya!"
 
 
 # ============================================
-# MESSAGES - RELIC MECHANICS
+# MESSAGE GAMEPLAY
 # ============================================
 messages:
+
+  # ============================================
+  # PROTEKSI RELIC
+  # ============================================
   relic-protection:
-    # When player tries to drop relic
-    drop-blocked: "§c[!] Relic is bound to your soul. You cannot drop it!"
-    
-    # When player tries to move relic to non-player inventory
-    storage-blocked: "§c[!] Relic can only be stored in your inventory!"
-    
-    # When non-op player tries to use admin commands
-    insufficient-permissions: "§cInsufficient permissions."
-  
-  # Messages for relic creation
+
+    # Pas player coba buang relic
+    drop-blocked: "§c[!] Relic telah terikat dengan jiwamu. Item ini tidak dapat dibuang!"
+
+    # Pas player coba masukin relic ke storage lain
+    storage-blocked: "§c[!] Relic hanya dapat disimpan di inventory pemain!"
+
+    # Pas non-op pake command admin
+    insufficient-permissions: "§cKamu tidak memiliki izin untuk melakukan ini."
+
+
+  # ============================================
+  # CRAFTING & AWAKENING RELIC
+  # ============================================
   relic-crafting:
-    # When relic is successfully created
-    success: "§aRelic item generated."
-    
-    # When awakening materials are generated
-    materials-generated: "§aAwakening materials generated."
-    
-    # When relic has already been awoken
-    already-awoken: "§c[!] The Worldheart Relic has been awakened by someone. This opportunity is gone!"
-    
-    # When player lacks required materials for awakening
-    missing-materials: "§c[!] You need all three materials: Fallen Soul, Worldheart Gem, and Dominion Core!"
-    
-    # When relic is successfully awakened
-    awakening-broadcast: "§4§l[ANNOUNCEMENT] §c%player% has awakened The Worldheart Relic!"
-    
-    # When player awakens relic
-    awakening-personal: "§d[!] The power of the Relic flows through you. Your location is now exposed to the entire server!"
-  
-  # Messages for PvP & death system
+
+    # Pas relic berhasil dibuat
+    success: "§aRelic berhasil dibuat."
+
+    # Pas material awakening di-generate
+    materials-generated: "§aMaterial awakening berhasil dibuat."
+
+    # Kalau relic udah pernah di-awaken
+    already-awoken: "§c[!] The Worldheart Relic telah dibangkitkan oleh seseorang. Kesempatan ini sudah hilang!"
+
+    # Kalau material kurang
+    missing-materials: "§c[!] Kamu membutuhkan Fallen Soul, Worldheart Gem, dan Dominion Core untuk awakening!"
+
+    # Broadcast awakening relic
+    awakening-broadcast: "§4§l[PENGUMUMAN] §c%player% telah membangkitkan The Worldheart Relic!"
+
+    # Message personal pas awakening
+    awakening-personal: "§d[!] Kekuatan Relic mengalir dalam tubuhmu. Lokasimu sekarang terekspos ke seluruh server!"
+
+
+  # ============================================
+  # SISTEM PvP & KEMATIAN
+  # ============================================
   death:
-    # When player killed by another player and their relic drops
-    relic-dropped: "§4§l[ANNOUNCEMENT] §c%player% has been killed by %killer%! The Relic now falls to the ground!"
-    
-    # When player dies to environment/mobs while holding relic
-    relic-protected: "§d[!] The Relic protects you from the void. This item will return when you respawn."
-  
-  # Messages for ore extraction
+
+    # Pas relic jatuh karena dibunuh player lain
+    relic-dropped: "§4§l[PENGUMUMAN] §c%player% dibunuh oleh %killer%! Relic kini jatuh ke tanah!"
+
+    # Pas mati karena environment/mob sambil pegang relic
+    relic-protected: "§d[!] Relic melindungimu dari kehampaan. Item ini akan kembali saat kamu respawn."
+
+
+  # ============================================
+  # EKSTRAKSI ORE
+  # ============================================
   ore-extraction:
-    # When player starts extraction
-    started: "§6[⛏] Starting extraction... This will take time."
-    
-    # When extraction is cancelled (player moved)
-    cancelled: "§c[✗] You moved too far! Extraction cancelled."
-    
-    # When extraction is complete
-    completed: "§a[✓] Extraction complete! You obtained Worldheart Gem."
-    
-    # When player tries to extract without proper tool
-    wrong-tool: "§c[!] You need a Diamond or Netherite pickaxe to extract this ore!"
-  
-  # Messages for achievements
+
+    # Pas mulai ekstraksi
+    started: "§6[⛏] Memulai ekstraksi... Proses ini membutuhkan waktu."
+
+    # Pas ekstraksi batal karena gerak
+    cancelled: "§c[✗] Kamu bergerak terlalu jauh! Ekstraksi dibatalkan."
+
+    # Pas ekstraksi selesai
+    completed: "§a[✓] Ekstraksi selesai! Kamu mendapatkan Worldheart Gem."
+
+    # Pas tool salah
+    wrong-tool: "§c[!] Kamu membutuhkan pickaxe Diamond atau Netherite untuk mengekstrak ore ini!"
+
+
+  # ============================================
+  # ACHIEVEMENT
+  # ============================================
   achievements:
-    # When player picks up Fallen Soul for first time
-    fallen-soul: "§d§l[ACHIEVEMENT] §e%player% has discovered a fragment of the soul... §8[Fallen Soul]"
-    
-    # When player picks up Worldheart Gem for first time
-    worldheart-gem: "§d§l[ACHIEVEMENT] §e%player% has excavated the secret of the world's core... §8[Worldheart Gem]"
-    
-    # When player picks up Dominion Core for first time
-    dominion-core: "§d§l[ACHIEVEMENT] §e%player% has seized the power of dominion! §8[Dominion Core]"
-  
-  # Messages for relic effects
+
+    # Pertama kali dapet Fallen Soul
+    fallen-soul: "§d§l[ACHIEVEMENT] §e%player% menemukan pecahan jiwa yang telah jatuh... §8[Fallen Soul]"
+
+    # Pertama kali dapet Worldheart Gem
+    worldheart-gem: "§d§l[ACHIEVEMENT] §e%player% menggali rahasia inti dunia... §8[Worldheart Gem]"
+
+    # Pertama kali dapet Dominion Core
+    dominion-core: "§d§l[ACHIEVEMENT] §e%player% telah merebut kekuatan dominasi! §8[Dominion Core]"
+
+
+  # ============================================
+  # EFEK RELIC
+  # ============================================
   relic-effects:
-    # When relic holder is marked with red waypoint
-    marked: "§4§l[!] RELIC AURA ERUPTS! Your position is now exposed as a RED MARKER on the Locator Bar!"
-  
-  # Messages for admin commands
+
+    # Pas holder relic ditandai
+    marked: "§4§l[!] AURA RELIC MELEDAK! Lokasimu sekarang ditampilkan sebagai MARKER MERAH di Locator Bar!"
+
+
+  # ============================================
+  # COMMAND ADMIN
+  # ============================================
   admin:
-    # When /relic reload is executed
-    reload-start: "§eReloading Relic Requiem config..."
-    reload-success: "§a[✓] Config reloaded successfully!"
-    reload-failed: "§c[✗] Failed to reload config. Check console for errors."
-    
-    # When admin spawns meteor
-    meteor-spawned: "§aA meteor has been spawned near you!"
-    
-    # When relic status is reset
-    relic-reset: "§a[!] Server relic status has been reset."
-  
-  # Messages for death ban system
+
+    # Pas reload config
+    reload-start: "§eReload config Relic Requiem..."
+    reload-success: "§a[✓] Config berhasil di-reload!"
+    reload-failed: "§c[✗] Gagal reload config. Cek console untuk detail error."
+
+    # Pas spawn meteor
+    meteor-spawned: "§aMeteor berhasil di-spawn di dekatmu!"
+
+    # Pas reset status relic
+    relic-reset: "§a[!] Status relic server berhasil di-reset."
+
+
+  # ============================================
+  # DEATH BAN
+  # ============================================
   death-ban:
-    # When player is banned after being killed
-    kick: "§cYou have been temporarily banned for %hours% hours after being killed by %killer%."
-    
-    # When banned player tries to join
-    join-kick: "§cYou are temporarily banned after being killed by %killer%.\n§cTime remaining: %hours% hours and %minutes% minutes."
+
+    # Pas player kena death ban
+    kick: "§cKamu dibanned sementara selama %hours% jam setelah dibunuh oleh %killer%."
+
+    # Pas player banned coba join
+    join-kick: "§cKamu masih terkena banned sementara setelah dibunuh oleh %killer%.\n§cSisa waktu: %hours% jam dan %minutes% menit."
 
 
 # ============================================
-# DEATH BAN SYSTEM
+# SISTEM DEATH BAN
 # ============================================
 death-ban:
-  # Duration in hours for temporary ban after being killed by another player
-  # Set to 0 to disable death ban feature
+
+  # Lama banned sementara setelah dibunuh player
+  # Set 0 buat matiin fitur death ban
   duration-hours: 3
 
+
 # ============================================
-# BANNED PLAYERS (managed by plugin)
+# DATA PLAYER KE-BAN
 # ============================================
+# Section ini diurus otomatis sama plugin.
+# Jangan diutak-atik manual kecuali ngerti resikonya 😭
 banned-players: {}
