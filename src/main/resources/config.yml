@@ -191,10 +191,10 @@ messages:
   # Messages for death ban system
   death-ban:
     # When player is banned after being killed
-    kick: "§cYou have been temporarily banned for %hours% hours due to being killed by another player."
+    kick: "§cYou have been temporarily banned for %hours% hours after being killed by %killer%."
     
     # When banned player tries to join
-    join-kick: "§cYou are temporarily banned for being killed by another player.\n§cTime remaining: %hours% hours and %minutes% minutes."
+    join-kick: "§cYou are temporarily banned after being killed by %killer%.\n§cTime remaining: %hours% hours and %minutes% minutes."
 
 
 # ============================================

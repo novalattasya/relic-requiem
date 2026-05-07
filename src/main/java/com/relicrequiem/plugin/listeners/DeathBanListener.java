@@ -21,10 +21,12 @@ public class DeathBanListener implements Listener {
             int banDurationHours = config.getDeathBanDurationHours();
             if (banDurationHours > 0) {
                 long banTimestamp = System.currentTimeMillis() + (banDurationHours * 60 * 60 * 1000L);
-                config.setBannedPlayer(victim.getUniqueId().toString(), banTimestamp);
+                config.setBannedPlayer(victim.getUniqueId().toString(), banTimestamp, killer.getName());
 
                 // Kick the victim immediately
-                String kickMessage = config.getDeathBanKickMessage().replace("%hours%", String.valueOf(banDurationHours));
+                String kickMessage = config.getDeathBanKickMessage()
+                    .replace("%hours%", String.valueOf(banDurationHours))
+                    .replace("%killer%", killer.getName());
                 victim.kickPlayer(kickMessage);
             }
         }
@@ -44,10 +46,12 @@ public class DeathBanListener implements Listener {
                 long remainingMillis = banTimestamp - currentTime;
                 long remainingHours = remainingMillis / (60 * 60 * 1000L);
                 long remainingMinutes = (remainingMillis % (60 * 60 * 1000L)) / (60 * 1000L);
+                String killerName = config.getPlayerBanKiller(uuid);
 
                 String kickMessage = config.getDeathBanJoinKickMessage()
                     .replace("%hours%", String.valueOf(remainingHours))
-                    .replace("%minutes%", String.valueOf(remainingMinutes));
+                    .replace("%minutes%", String.valueOf(remainingMinutes))
+                    .replace("%killer%", killerName);
                 player.kickPlayer(kickMessage);
             } else {
                 // Ban expired, remove from config

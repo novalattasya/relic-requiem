@@ -299,18 +299,9 @@ public class ConfigManager {
     // ============================================
     // BANNED PLAYERS
     // ============================================
-    public java.util.Map<String, Long> getBannedPlayers() {
-        org.bukkit.configuration.ConfigurationSection section = config.getConfigurationSection("banned-players");
-        if (section == null) return new java.util.HashMap<>();
-        return section.getValues(false).entrySet().stream()
-            .collect(java.util.stream.Collectors.toMap(
-                e -> e.getKey(),
-                e -> ((Number) e.getValue()).longValue()
-            ));
-    }
-
-    public void setBannedPlayer(String uuid, long banTimestamp) {
-        config.set("banned-players." + uuid, banTimestamp);
+    public void setBannedPlayer(String uuid, long banTimestamp, String killerName) {
+        config.set("banned-players." + uuid + ".until", banTimestamp);
+        config.set("banned-players." + uuid + ".killer", killerName);
         plugin.saveConfig();
     }
 
@@ -320,10 +311,14 @@ public class ConfigManager {
     }
 
     public boolean isPlayerBanned(String uuid) {
-        return config.contains("banned-players." + uuid);
+        return config.contains("banned-players." + uuid + ".until");
     }
 
     public long getPlayerBanTimestamp(String uuid) {
-        return config.getLong("banned-players." + uuid, 0L);
+        return config.getLong("banned-players." + uuid + ".until", 0L);
+    }
+
+    public String getPlayerBanKiller(String uuid) {
+        return config.getString("banned-players." + uuid + ".killer", "another player");
     }
 }
