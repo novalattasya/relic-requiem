@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class RelicRequiemPlugin extends JavaPlugin {
 
+    private int meteorTaskId = -1;
+
     @Override
     public void onEnable() {
         getLogger().info("Relic Requiem Plugin is enabled.");
@@ -36,7 +38,7 @@ public class RelicRequiemPlugin extends JavaPlugin {
         new RelicEffectTask().runTaskTimer(this, 0L, 20L);
 
         long meteorInterval = 20L * 60 * 60 * ConfigManager.getInstance().getMeteorSpawnIntervalHours();
-        getServer().getScheduler().runTaskTimer(this, MeteorManager::spawnRandomMeteor, meteorInterval, meteorInterval);
+        meteorTaskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, MeteorManager::spawnRandomMeteor, meteorInterval, meteorInterval);
     }
 
     private void initializeWorldBorders() {
@@ -46,6 +48,14 @@ public class RelicRequiemPlugin extends JavaPlugin {
             border.setCenter(0.0, 0.0);
             border.setSize(borderSize);
         }
+    }
+
+    private void restartMeteorScheduler() {
+        if (meteorTaskId != -1) {
+            getServer().getScheduler().cancelTask(meteorTaskId);
+        }
+        long meteorInterval = 20L * 60 * 60 * ConfigManager.getInstance().getMeteorSpawnIntervalHours();
+        meteorTaskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, MeteorManager::spawnRandomMeteor, meteorInterval, meteorInterval);
     }
 
     @Override
@@ -98,6 +108,8 @@ public class RelicRequiemPlugin extends JavaPlugin {
         try {
             player.sendMessage(config.getAdminReloadStart());
             config.reload();
+            initializeWorldBorders();
+            restartMeteorScheduler();
             player.sendMessage(config.getAdminReloadSuccess());
             getLogger().info("Config reloaded by " + player.getName());
             return true;
