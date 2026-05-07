@@ -1,5 +1,7 @@
 package com.relicrequiem.plugin.tasks;
 
+import com.relicrequiem.plugin.config.ConfigManager;
+import com.relicrequiem.plugin.managers.RelicManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +19,7 @@ public class RelicEffectTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        ConfigManager config = ConfigManager.getInstance();
         Set<UUID> currentHolders = new HashSet<>();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -42,7 +45,7 @@ public class RelicEffectTask extends BukkitRunnable {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + player.getName() + " color red");
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + player.getName() + " style reset");
                     
-                    player.sendMessage("§4§l[!] AURA RELIC MELEDAK! Posisimu sekarang terekspos sebagai TITIK MERAH di Locator Bar!");
+                    player.sendMessage(config.getRelicEffectMarked());
                 }
             }
         }
@@ -51,12 +54,9 @@ public class RelicEffectTask extends BukkitRunnable {
             if (!currentHolders.contains(uuid)) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
-                    // Reset warnanya ke default
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "waypoint modify " + p.getName() + " color reset");
-                    
-                    p.sendMessage("§a§l[!] Relic lepas dari tanganmu. Jejakmu di Locator Bar kembali tersembunyi.");
                 }
-                return true; 
+                return true;
             }
             return false;
         });

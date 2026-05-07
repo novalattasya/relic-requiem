@@ -1,5 +1,8 @@
 package com.relicrequiem.plugin.listeners;
 
+import com.relicrequiem.plugin.RelicRequiemPlugin;
+import com.relicrequiem.plugin.config.ConfigManager;
+import com.relicrequiem.plugin.managers.MaterialManager;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -20,21 +23,25 @@ public class AchievementListener implements Listener {
 
     @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
+        ConfigManager config = ConfigManager.getInstance();
         if (!(event.getEntity() instanceof Player player)) return;
 
         ItemStack item = event.getItem().getItemStack();
 
         if (MaterialManager.isFallenSoul(item) && !player.getPersistentDataContainer().has(HAS_SOUL, PersistentDataType.BYTE)) {
             player.getPersistentDataContainer().set(HAS_SOUL, PersistentDataType.BYTE, (byte) 1);
-            Bukkit.broadcastMessage("§d§l[ACHIEVEMENT] §e" + player.getName() + " telah menemukan pecahan jiwa... §8[Fallen Soul]");
+            String message = config.getAchievementFallenSoul().replace("%player%", player.getName());
+            Bukkit.broadcastMessage(message);
         }
         else if (MaterialManager.isWorldheartGem(item) && !player.getPersistentDataContainer().has(HAS_GEM, PersistentDataType.BYTE)) {
             player.getPersistentDataContainer().set(HAS_GEM, PersistentDataType.BYTE, (byte) 1);
-            Bukkit.broadcastMessage("§d§l[ACHIEVEMENT] §e" + player.getName() + " menggali rahasia inti bumi... §8[Worldheart Gem]");
+            String message = config.getAchievementWorldheartGem().replace("%player%", player.getName());
+            Bukkit.broadcastMessage(message);
         }
         else if (MaterialManager.isDominionCore(item) && !player.getPersistentDataContainer().has(HAS_CORE, PersistentDataType.BYTE)) {
             player.getPersistentDataContainer().set(HAS_CORE, PersistentDataType.BYTE, (byte) 1);
-            Bukkit.broadcastMessage("§d§l[ACHIEVEMENT] §e" + player.getName() + " merebut kekuatan sang penguasa! §8[Dominion Core]");
+            String message = config.getAchievementDominionCore().replace("%player%", player.getName());
+            Bukkit.broadcastMessage(message);
         }
     }
 }

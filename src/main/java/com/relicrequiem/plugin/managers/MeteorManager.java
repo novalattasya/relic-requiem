@@ -1,5 +1,6 @@
 package com.relicrequiem.plugin.managers;
 
+import com.relicrequiem.plugin.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
@@ -11,26 +12,28 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.relicrequiem.plugin.RelicRequiemPlugin;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MeteorManager {
 
     public static void spawnRandomMeteor() {
+        ConfigManager config = ConfigManager.getInstance();
         World world = Bukkit.getWorlds().get(0);
+        int spawnRadius = config.getMeteorSpawnRadius();
         int x = 0, z = 0;
         Block targetGround = null;
         boolean validLocation = false;
 
         while (!validLocation) {
-            x = ThreadLocalRandom.current().nextInt(-2000, 2001);
-            z = ThreadLocalRandom.current().nextInt(-2000, 2001);
+            x = ThreadLocalRandom.current().nextInt(-spawnRadius, spawnRadius + 1);
+            z = ThreadLocalRandom.current().nextInt(-spawnRadius, spawnRadius + 1);
             
-            // Cari blok tertinggi yang BUKAN udara
             Block highest = world.getHighestBlockAt(x, z);
             
-            // Cek apakah itu tanah lapang alami
             if (isNaturalGround(highest.getType())) {
                 targetGround = highest;
                 validLocation = true;
@@ -70,20 +73,21 @@ public class MeteorManager {
     }
 
     private static void executeMeteorSpawn(World world, int x, int y, int z, boolean isGlobalBroadcast) {
+        ConfigManager config = ConfigManager.getInstance();
+        int craterRadius = config.getMeteorCraterRadius();
         
-        int radius = 3;
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
+        for (int dx = -craterRadius; dx <= craterRadius; dx++) {
+            for (int dy = -craterRadius; dy <= craterRadius; dy++) {
+                for (int dz = -craterRadius; dz <= craterRadius; dz++) {
                     double distanceSq = dx * dx + dy * dy + dz * dz;
                     
-                    if (distanceSq <= radius * radius) {
+                    if (distanceSq <= craterRadius * craterRadius) {
                         Block b = world.getBlockAt(x + dx, y + dy, z + dz);
                         
-                        if (b.getType() == Material.BEDROCK) continue; // Jangan hancurin bedrock
-                        if (dx == 0 && dy == 0 && dz == 0) continue; // Jangan sentuh titik tengah (tempat Ore)
+                        if (b.getType() == Material.BEDROCK) continue;
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
 
-                        if (distanceSq < (radius - 1) * (radius - 1)) {
+                        if (distanceSq < (craterRadius - 1) * (craterRadius - 1)) {
                             b.setType(Material.AIR);
                         } else {
                             if (b.getType().isSolid() && !b.getType().isAir()) {
@@ -106,7 +110,8 @@ public class MeteorManager {
         noteBlock.setNote(new Note(10));
         targetBlock.setBlockData(noteBlock, false);
 
-        Location asLoc = targetBlock.getLocation().add(0.5, -2.27, 0.5); 
+        double yOffset = config.getArmorStandYOffset();
+        Location asLoc = targetBlock.getLocation().add(0.5, yOffset, 0.5);
         ArmorStand armorStand = world.spawn(asLoc, ArmorStand.class);
         
         armorStand.setInvisible(true);
@@ -114,9 +119,9 @@ public class MeteorManager {
         armorStand.setGravity(false);
         armorStand.setMarker(true);
         
-        // Skala 1.62 biar ukurannya pas 1 Blok
+        double scale = config.getArmorStandScale();
         if (armorStand.getAttribute(Attribute.GENERIC_SCALE) != null) {
-            armorStand.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.62);
+            armorStand.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(scale);
         }
         
         // Pakaikan item Worldheart Ore custom lu sebagai Helm!

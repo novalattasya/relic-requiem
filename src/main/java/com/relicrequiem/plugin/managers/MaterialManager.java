@@ -1,5 +1,6 @@
 package com.relicrequiem.plugin.managers;
 
+import com.relicrequiem.plugin.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -15,7 +16,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 
-
+import com.relicrequiem.plugin.RelicRequiemPlugin;
 import java.util.List;
 
 public class MaterialManager {
@@ -28,15 +29,20 @@ public class MaterialManager {
     public static final NamespacedKey WORLDHEART_ORE_KEY = new NamespacedKey(plugin, "worldheart_ore");
 
     public static ItemStack createFallenSoul() {
+        ConfigManager config = ConfigManager.getInstance();
         ItemStack item = new ItemStack(Material.PHANTOM_MEMBRANE);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Fallen Soul").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(
-                    Component.text("Setiap jiwa yang jatuh tidak hilang begitu saja,").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("mereka menjadi bahan bakar perang berikutnya.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-            ));
-            meta.setCustomModelData(2); 
+            meta.displayName(Component.text(config.getFallenSoulName()).color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
+            
+            List<String> lore = config.getFallenSoulLore();
+            if (!lore.isEmpty()) {
+                meta.lore(lore.stream()
+                        .map(line -> Component.text(line).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
+                        .toList());
+            }
+            
+            meta.setCustomModelData(2);
             meta.getPersistentDataContainer().set(FALLEN_SOUL_KEY, PersistentDataType.BYTE, (byte) 1);
             item.setItemMeta(meta);
         }
@@ -49,15 +55,20 @@ public class MaterialManager {
     }
 
     public static ItemStack createWorldheartGem() {
+        ConfigManager config = ConfigManager.getInstance();
         ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Worldheart Gem").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(
-                    Component.text("Jantung dunia yang mengeras oleh ribuan perang,").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("hanya yang bertahan yang bisa menemukannya.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-            ));
-            meta.setCustomModelData(3); 
+            meta.displayName(Component.text(config.getWorldheartGemName()).color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
+            
+            List<String> lore = config.getWorldheartGemLore();
+            if (!lore.isEmpty()) {
+                meta.lore(lore.stream()
+                        .map(line -> Component.text(line).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
+                        .toList());
+            }
+            
+            meta.setCustomModelData(3);
             meta.getPersistentDataContainer().set(WORLDHEART_GEM_KEY, PersistentDataType.BYTE, (byte) 1);
             item.setItemMeta(meta);
         }
@@ -70,15 +81,20 @@ public class MaterialManager {
     }
 
     public static ItemStack createDominionCore() {
+        ConfigManager config = ConfigManager.getInstance();
         ItemStack item = new ItemStack(Material.ECHO_SHARD);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Dominion Core").color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(
-                    Component.text("Kekuatan untuk memerintah bukan diwariskan,").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("tapi direbut dari kekacauan.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-            ));
-            meta.setCustomModelData(4); 
+            meta.displayName(Component.text(config.getDominionCoreName()).color(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
+            
+            List<String> lore = config.getDominionCoreLore();
+            if (!lore.isEmpty()) {
+                meta.lore(lore.stream()
+                        .map(line -> Component.text(line).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
+                        .toList());
+            }
+            
+            meta.setCustomModelData(4);
             meta.getPersistentDataContainer().set(DOMINION_CORE_KEY, PersistentDataType.BYTE, (byte) 1);
             item.setItemMeta(meta);
         }
@@ -91,18 +107,22 @@ public class MaterialManager {
     }
 
     public static ItemStack createWorldheartOre() {
-        ItemStack item = new ItemStack(Material.NOTE_BLOCK); 
+        ConfigManager config = ConfigManager.getInstance();
+        ItemStack item = new ItemStack(Material.NOTE_BLOCK);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text("Worldheart Ore").color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(
-                    Component.text("Batu kuno yang menyimpan inti dunia.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("Hanya beliung terkuat yang bisa menambangnya!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false)
-            ));
-            meta.setCustomModelData(5); 
+            meta.displayName(Component.text(config.getWorldheartOreName()).color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
+            
+            List<String> lore = config.getWorldheartOreLore();
+            if (!lore.isEmpty()) {
+                meta.lore(lore.stream()
+                        .map(line -> Component.text(line).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
+                        .toList());
+            }
+            
+            meta.setCustomModelData(5);
             meta.getPersistentDataContainer().set(WORLDHEART_ORE_KEY, PersistentDataType.BYTE, (byte) 1);
 
-            // INI SIHIRNYA: Suntikkan DNA Blok langsung ke dalam Item!
             if (meta instanceof BlockDataMeta blockDataMeta) {
                 BlockData data = org.bukkit.Bukkit.createBlockData(Material.NOTE_BLOCK);
                 NoteBlock noteBlock = (NoteBlock) data;

@@ -1,5 +1,8 @@
 package com.relicrequiem.plugin.listeners;
 
+import com.relicrequiem.plugin.config.ConfigManager;
+import com.relicrequiem.plugin.managers.MaterialManager;
+import com.relicrequiem.plugin.managers.RelicManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -29,7 +32,7 @@ public class RelicListener implements Listener {
     public void onDrop(PlayerDropItemEvent event) {
         if (RelicManager.isRelic(event.getItemDrop().getItemStack())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("§c[!] Relic telah terikat dengan jiwamu. Kamu tidak bisa membuangnya!");
+            event.getPlayer().sendMessage(ConfigManager.getInstance().getRelicDropBlocked());
         }
     }
 
@@ -41,13 +44,14 @@ public class RelicListener implements Listener {
         if (event.getClickedInventory() != null && event.getClickedInventory().getType() != InventoryType.PLAYER) {
             if (RelicManager.isRelic(cursor) || (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && RelicManager.isRelic(clicked))) {
                 event.setCancelled(true);
-                event.getWhoClicked().sendMessage("§c[!] Relic hanya bisa disimpan di dalam tasmu!");
+                event.getWhoClicked().sendMessage(ConfigManager.getInstance().getRelicStorageBlocked());
             }
         }
     }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
+        ConfigManager config = ConfigManager.getInstance();
         Player player = event.getEntity();
         Player killer = player.getKiller();
 
@@ -60,11 +64,14 @@ public class RelicListener implements Listener {
             ItemStack drop = drops.next();
             if (RelicManager.isRelic(drop)) {
                 if (killer != null) {
-                    Bukkit.broadcastMessage("§4§l[PENGUMUMAN] §c" + player.getName() + " telah dibunuh oleh " + killer.getName() + "! Relic kini jatuh ke tanah!");
+                    String message = config.getRelicDropped()
+                            .replace("%player%", player.getName())
+                            .replace("%killer%", killer.getName());
+                    Bukkit.broadcastMessage(message);
                 } else {
                     drops.remove();
                     keepRelicMap.put(player.getUniqueId(), true);
-                    player.sendMessage("§d[!] Relic melindungimu dari kehampaan. Item ini akan kembali saat kamu respawn.");
+                    player.sendMessage(config.getRelicProtected());
                 }
                 break;
             }

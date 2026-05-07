@@ -1,5 +1,6 @@
 package com.relicrequiem.plugin.managers;
 
+import com.relicrequiem.plugin.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.relicrequiem.plugin.RelicRequiemPlugin;
 import java.util.List;
 
 public class RelicManager {
@@ -19,19 +21,22 @@ public class RelicManager {
     public static final NamespacedKey RELIC_KEY = new NamespacedKey(JavaPlugin.getPlugin(RelicRequiemPlugin.class), "is_relic");
 
     public static ItemStack createRelic() {
+        ConfigManager config = ConfigManager.getInstance();
         ItemStack relic = new ItemStack(Material.PAPER);
         ItemMeta meta = relic.getItemMeta();
 
         if (meta != null) {
-            meta.displayName(Component.text("The Worldheart Relic")
+            meta.displayName(Component.text(config.getRelicName())
                     .color(NamedTextColor.DARK_PURPLE)
                     .decorate(TextDecoration.BOLD)
                     .decoration(TextDecoration.ITALIC, false));
             
-            meta.lore(List.of(
-                    Component.text("Artefak penentu nasib dunia.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("Hanya satu yang boleh berkuasa!").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false)
-            ));
+            List<String> lore = config.getRelicLore();
+            if (!lore.isEmpty()) {
+                meta.lore(lore.stream()
+                        .map(line -> Component.text(line).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
+                        .toList());
+            }
 
             meta.addEnchant(Enchantment.UNBREAKING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

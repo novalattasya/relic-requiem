@@ -1,5 +1,8 @@
 package com.relicrequiem.plugin.listeners;
 
+import com.relicrequiem.plugin.RelicRequiemPlugin;
+import com.relicrequiem.plugin.config.ConfigManager;
+import com.relicrequiem.plugin.managers.MaterialManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
@@ -29,8 +32,10 @@ import java.util.UUID;
 public class OreListener implements Listener {
 
     private final Map<UUID, BukkitRunnable> activeExtractions = new HashMap<>();
-    
-    private final int MAX_STEPS = 330; 
+
+    private int getMaxExtractionSteps() {
+        return ConfigManager.getInstance().getOreExtractionDuration();
+    }
 
     private boolean isWorldheartOreBlock(Block block) {
         if (block.getType() == Material.NOTE_BLOCK) {
@@ -57,7 +62,7 @@ public class OreListener implements Listener {
 
                     ItemStack tool = player.getInventory().getItemInMainHand();
                     if (tool.getType() != Material.DIAMOND_PICKAXE && tool.getType() != Material.NETHERITE_PICKAXE) {
-                        player.sendMessage("§c[!] Beliungmu terlalu lemah untuk memulai ekstraksi! Butuh Diamond Pickaxe.");
+                        player.sendMessage(ConfigManager.getInstance().getOreExtractionWrongTool());
                         return;
                     }
 
@@ -69,46 +74,40 @@ public class OreListener implements Listener {
 
     private void startExtraction(Player player, Block block) {
         Location loc = block.getLocation();
-        player.sendMessage("§d[!] Memulai Ekstraksi Worldheart Ore... Tetaplah dalam radius 6 blok!");
+        player.sendMessage(ConfigManager.getInstance().getOreExtractionStarted());
 
         BukkitRunnable task = new BukkitRunnable() {
             int step = 0;
 
             @Override
             public void run() {
-                // 1. Validasi keberadaan player
                 if (!player.isOnline() || player.isDead() || player.getLocation().distance(loc) > 6) {
-                    player.sendMessage("§c[!] Ekstraksi Gagal! Kamu terlalu jauh dari Ore.");
+                    player.sendMessage(ConfigManager.getInstance().getOreExtractionCancelled());
                     cleanup(player, loc);
                     return;
                 }
 
-                // 2. Validasi Blok
                 if (!isWorldheartOreBlock(block)) {
                     cleanup(player, loc);
                     return;
                 }
 
                 step++;
-                int percentage = (int) (((double) step / MAX_STEPS) * 100);
+                int percentage = (int) (((double) step / getMaxExtractionSteps()) * 100);
 
-                // 3. UI Progress Bar
                 String progressBar = generateProgressBar(percentage);
                 player.sendActionBar(Component.text("§5§lEXTRACTION: " + progressBar + " §d" + percentage + "%"));
 
-                // 4. RETAKAN
-                float progress = (float) step / MAX_STEPS;
+                float progress = (float) step / getMaxExtractionSteps();
                 block.getWorld().getPlayers().forEach(p -> p.sendBlockDamage(loc, progress, player.getEntityId()));
 
-                // 5. PARTIKEL
                 if (step % 4 == 0) {
                     block.getWorld().spawnParticle(Particle.ENCHANT, loc.clone().add(0.5, 0.5, 0.5), 10, 0.4, 0.4, 0.4, 0.1);
                     float pitch = 1.0f + (percentage / 100f);
                     block.getWorld().playSound(loc, Sound.BLOCK_AMETHYST_BLOCK_RESONATE, 2.0f, pitch);
                 }
 
-                // 6. FINISH
-                if (step >= MAX_STEPS) {
+                if (step >= getMaxExtractionSteps()) {
                     finishExtraction(player, block);
                     cleanup(player, loc);
                 }
@@ -117,7 +116,6 @@ public class OreListener implements Listener {
             private void cleanup(Player p, Location l) {
                 this.cancel();
                 activeExtractions.remove(p.getUniqueId());
-                // Hapus retakan (HANYA MENGHAPUS EFEK RETAK, BLOK TETAP AMAN)
                 l.getWorld().getPlayers().forEach(pl -> pl.sendBlockDamage(l, 0.0f, p.getEntityId()));
             }
         };
@@ -153,7 +151,7 @@ public class OreListener implements Listener {
 
         // DROP ITEM
         block.getWorld().dropItemNaturally(block.getLocation(), MaterialManager.createWorldheartGem());
-        player.sendMessage("§a[!] Ekstraksi Berhasil! Inti bumi telah terlepas.");
+        player.sendMessage(ConfigManager.getInstance().getOreExtractionCompleted());
     }
 
     private String generateProgressBar(int percentage) {

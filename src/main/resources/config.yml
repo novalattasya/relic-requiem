@@ -1,1 +1,196 @@
-relic_awoken: false
+# ============================================
+# Relic Requiem - Configuration File
+# ============================================
+# This configuration file controls all gameplay mechanics,
+# drop rates, timings, and messages in the Relic Requiem plugin.
+# The default values match the original plugin behavior.
+
+# ============================================
+# WORLD SETTINGS
+# ============================================
+world:
+  # Size of the world border (radius from center)
+  # Default: 8000 (covers ±4000 from center point)
+  border-size: 8000
+
+
+# ============================================
+# METEOR SYSTEM
+# ============================================
+meteor:
+  # Interval in hours between automatic meteor spawns
+  spawn-interval-hours: 3
+  
+  # Spawn radius in blocks (searches within this radius from 0,0)
+  spawn-radius: 2000
+  
+  # Crater radius for destruction
+  crater-radius: 3
+  
+  # Armor stand Y-offset for Bedrock compatibility
+  # This ensures proper alignment on block space
+  armor-stand-y-offset: -2.27
+  
+  # Armor stand scale for visual representation
+  armor-stand-scale: 1.62
+
+
+# ============================================
+# ORE EXTRACTION SYSTEM
+# ============================================
+ore-extraction:
+  # Duration in ticks to extract worldheart ore
+  # (330 ticks = 82.5 seconds, runs every 5 ticks = 66 steps)
+  duration-ticks: 330
+  
+  # Radius in blocks to search for armor stand marker when ore is destroyed
+  destruction-search-radius: 4.0
+
+
+# ============================================
+# MYTHIC MOBS - DROP CHANCES
+# ============================================
+# Probability (0.0 - 1.0) for Dominion Core to drop from each mob
+# Mobs not listed have 0.0% chance
+drop-chances:
+  # Tier 1: Bosses
+  skeletonking: 0.80
+  
+  # Tier 2: Mini-Bosses / High Health
+  angrysludge: 0.40
+  staticallychargedsheep: 0.20
+  
+  # Tier 3: Elites
+  skeletalknight: 0.15
+  
+  # Tier 4: Minions / Common
+  skeletalminion: 0.005
+
+
+# ============================================
+# CUSTOM ITEMS - NAMES & DESCRIPTIONS
+# ============================================
+items:
+  fallen-soul:
+    name: "Fallen Soul"
+    lore:
+      - "Every soul that falls is not lost,"
+      - "it becomes fuel for the next war."
+  
+  worldheart-gem:
+    name: "Worldheart Gem"
+    lore:
+      - "The hardened heart of the world,"
+      - "shaped by thousands of wars."
+  
+  dominion-core:
+    name: "Dominion Core"
+    lore:
+      - "Power to rule is not inherited,"
+      - "but seized from chaos."
+  
+  worldheart-ore:
+    name: "Worldheart Ore"
+    lore:
+      - "A meteor bearing the power"
+      - "to reshape destiny."
+  
+  relic:
+    name: "The Worldheart Relic"
+    lore:
+      - "The artifact that determines"
+      - "the fate of the world."
+      - "Only one may reign supreme!"
+
+
+# ============================================
+# MESSAGES - RELIC MECHANICS
+# ============================================
+messages:
+  relic-protection:
+    # When player tries to drop relic
+    drop-blocked: "§c[!] Relic is bound to your soul. You cannot drop it!"
+    
+    # When player tries to move relic to non-player inventory
+    storage-blocked: "§c[!] Relic can only be stored in your inventory!"
+    
+    # When non-op player tries to use admin commands
+    insufficient-permissions: "§cInsufficient permissions."
+  
+  # Messages for relic creation
+  relic-crafting:
+    # When relic is successfully created
+    success: "§aRelic item generated."
+    
+    # When awakening materials are generated
+    materials-generated: "§aAwakening materials generated."
+    
+    # When relic has already been awoken
+    already-awoken: "§c[!] The Worldheart Relic has been awakened by someone. This opportunity is gone!"
+    
+    # When player lacks required materials for awakening
+    missing-materials: "§c[!] You need all three materials: Fallen Soul, Worldheart Gem, and Dominion Core!"
+    
+    # When relic is successfully awakened
+    awakening-broadcast: "§4§l[ANNOUNCEMENT] §c%player% has awakened The Worldheart Relic!"
+    
+    # When player awakens relic
+    awakening-personal: "§d[!] The power of the Relic flows through you. Your location is now exposed to the entire server!"
+  
+  # Messages for PvP & death system
+  death:
+    # When player killed by another player and their relic drops
+    relic-dropped: "§4§l[ANNOUNCEMENT] §c%player% has been killed by %killer%! The Relic now falls to the ground!"
+    
+    # When player dies to environment/mobs while holding relic
+    relic-protected: "§d[!] The Relic protects you from the void. This item will return when you respawn."
+  
+  # Messages for ore extraction
+  ore-extraction:
+    # When player starts extraction
+    started: "§6[⛏] Starting extraction... This will take time."
+    
+    # When extraction is cancelled (player moved)
+    cancelled: "§c[✗] You moved too far! Extraction cancelled."
+    
+    # When extraction is complete
+    completed: "§a[✓] Extraction complete! You obtained Worldheart Gem."
+    
+    # When player tries to extract without proper tool
+    wrong-tool: "§c[!] You need a Diamond or Netherite pickaxe to extract this ore!"
+  
+  # Messages for achievements
+  achievements:
+    # When player picks up Fallen Soul for first time
+    fallen-soul: "§d§l[ACHIEVEMENT] §e%player% has discovered a fragment of the soul... §8[Fallen Soul]"
+    
+    # When player picks up Worldheart Gem for first time
+    worldheart-gem: "§d§l[ACHIEVEMENT] §e%player% has excavated the secret of the world's core... §8[Worldheart Gem]"
+    
+    # When player picks up Dominion Core for first time
+    dominion-core: "§d§l[ACHIEVEMENT] §e%player% has seized the power of dominion! §8[Dominion Core]"
+  
+  # Messages for relic effects
+  relic-effects:
+    # When relic holder is marked with red waypoint
+    marked: "§4§l[!] RELIC AURA ERUPTS! Your position is now exposed as a RED MARKER on the Locator Bar!"
+  
+  # Messages for admin commands
+  admin:
+    # When /relic reload is executed
+    reload-start: "§eReloading Relic Requiem config..."
+    reload-success: "§a[✓] Config reloaded successfully!"
+    reload-failed: "§c[✗] Failed to reload config. Check console for errors."
+    
+    # When admin spawns meteor
+    meteor-spawned: "§aA meteor has been spawned near you!"
+    
+    # When relic status is reset
+    relic-reset: "§a[!] Server relic status has been reset."
+
+
+# ============================================
+# INTERNAL
+# ============================================
+# Tracks if the Relic has been awakened (managed by plugin)
+relic-awakened: false

@@ -7,18 +7,24 @@ description: Relic Requiem RPG Event Plugin
 
 commands:
   getrelic:
-    description: Ambil item Relic untuk testing
+    description: Get the Relic item for testing
     usage: /getrelic
     permission: op
   getmaterials:
-    description: Ambil bahan untuk testing
+    description: Get all awakening materials for testing
     usage: /getmaterials
     permission: op
   spawnmeteor:
-    description: Paksa spawn meteor Worldheart Ore
+    description: Force spawn a Worldheart Ore meteor near player
     usage: /spawnmeteor
     permission: op
   resetrelic:
-    description: Reset item Relic yang sudah dicraft
+    description: Reset the Relic awakened status
     usage: /resetrelic
     permission: op
+  relic:
+    description: Relic Requiem admin commands
+    usage: /relic <reload>
+    permission: op
+    subcommands:
+      - reload
